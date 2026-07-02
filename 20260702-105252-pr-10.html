@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deep Review: 20260702-105252-pr-10</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+  <style>
+/* Deep Review — canonical stylesheet
+ * Inlined into each generated HTML file by the beautify-review skill.
+ * Edit this file to change the look of all future reviews.
+ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  color: #1f2937;
+  background: #f8f9fb;
+  margin: 0;
+  padding: 2rem 1rem;
+}
+main { max-width: 900px; margin: 0 auto; }
+h1 { font-size: 1.6rem; margin-bottom: 0.5rem; color: #111827; }
+h2 { font-size: 1.35rem; margin-top: 2.5rem; margin-bottom: 1rem; color: #111827; border-bottom: 2px solid #e5e7eb; padding-bottom: 0.4rem; }
+h3 { font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.8rem; }
+hr { border: none; border-top: 2px solid #e5e7eb; margin: 2rem 0; }
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+code { font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace; font-size: 0.85em; background: #f3f4f6; padding: 0.15em 0.35em; border-radius: 4px; }
+
+/* Code blocks — override Prism defaults */
+pre { margin: 0 !important; border-radius: 0 0 8px 8px !important; }
+pre[class*="language-"] { font-size: 0.78rem; line-height: 1.3; }
+pre code { background: none; padding: 0; }
+
+/* Report metadata table */
+.meta-table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; }
+.meta-table td { padding: 0.35rem 0.6rem; border: 1px solid #e5e7eb; vertical-align: top; }
+.meta-table td:first-child { font-weight: 600; width: 140px; background: #f9fafb; white-space: nowrap; }
+
+/* Cards — every section and finding lives in a card */
+.card { border-radius: 10px; padding: 1.2rem 1.4rem; margin-bottom: 1.2rem; }
+.card-neutral { background: #f1f3f5; border: 1px solid #d5d9e0; }
+.card-critical { background: #ffeef0; border: 1px solid #f5c6cb; }
+.card-important { background: #fff0e0; border: 1px solid #f5d9a8; }
+.card-suggestion { background: #f0f6ff; border: 1px solid #c7d9f5; }
+.card-design { background: #f0faf4; border: 1px solid #b7e4c7; }
+
+/* Severity section headings — colored to match their cards */
+.section-critical { color: #9b1c1c; }
+.section-important { color: #92400e; }
+.section-suggestion { color: #1e40af; }
+.section-design { color: #065f46; }
+
+/* Agent attribution pills */
+.pill { display: inline-block; font-size: 0.72rem; font-weight: 600; padding: 0.15em 0.55em; border-radius: 999px; margin-right: 0.3em; vertical-align: middle; letter-spacing: 0.01em; }
+.pill-claude { background: #e9d5ff; color: #6b21a8; }
+.pill-codex { background: #d1fae5; color: #065f46; }
+.pill-gemini { background: #ffe4e6; color: #9f1239; }
+.pill-qwen { background: #fed7aa; color: #9a3412; }
+.pill-gemma { background: #fef9c3; color: #854d0e; }
+.pill-glm { background: #cffafe; color: #155e75; }
+
+/* Finding titles */
+.finding-title { font-weight: 700; font-size: 1rem; margin-bottom: 0.6rem; line-height: 1.4; }
+.finding-num { font-weight: 800; }
+
+/* Code file header — dark bar above each source code block.
+ * The filename is a GitHub permalink to the displayed line range.
+ * Text color is light gray (#adbac7) for the bar, green (#7ee787)
+ * for the hyperlink — matching GitHub's dark-mode file header. */
+.code-file-header { background: #2d333b; color: #adbac7; font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace; font-size: 0.75rem; padding: 0.4rem 0.9rem; border-radius: 8px 8px 0 0; margin-top: 0.8rem; }
+.code-file-header a { color: #7ee787; }
+.code-file-header a:hover { text-decoration: underline; }
+
+/* Line numbers (CSS counters) and line highlighting */
+.code-line { display: block; }
+.code-line::before {
+  content: counter(line);
+  counter-increment: line;
+  display: inline-block;
+  width: 3em;
+  margin-right: 0.8em;
+  padding-right: 0.5em;
+  text-align: right;
+  color: #636e7b;
+  border-right: 1px solid #3d4556;
+  user-select: none;
+}
+.line-hl { background: rgba(255, 199, 0, 0.18); }
+
+/* Pilcrow anchor links — hidden until parent is hovered */
+.pilcrow { color: #d1d5db; text-decoration: none; font-weight: 400; margin-left: 0.4em; opacity: 0; transition: opacity 0.15s; }
+h2:hover .pilcrow, h3:hover .pilcrow, .finding-title:hover .pilcrow { opacity: 1; }
+.pilcrow:hover { color: #6b7280; text-decoration: none; }
+
+/* Fix label */
+.fix-label { font-weight: 700; }
+
+/* Agent retro summary table */
+.retro-table { width: 100%; border-collapse: collapse; margin-top: 0.8rem; font-size: 0.9rem; table-layout: fixed; }
+.retro-table th, .retro-table td { padding: 0.45rem 0.7rem; border: 1px solid #e5e7eb; text-align: left; }
+.retro-table th { background: #f3f4f6; font-weight: 600; }
+.retro-table tr:nth-child(even) { background: #f9fafb; }
+
+/* Supply-chain Summary table — first column gets breathing room,
+ * numeric middle columns center, header keeps its label on one line. */
+.summary-table { width: 100%; border-collapse: collapse; margin: 0.4rem 0 0.8rem; font-size: 0.92rem; }
+.summary-table th, .summary-table td {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid #d5d9e0;
+  vertical-align: top;
+  text-align: left;
+}
+.summary-table th { background: rgba(255, 255, 255, 0.65); font-weight: 600; white-space: nowrap; }
+.summary-table td:first-child { min-width: 11rem; white-space: nowrap; }
+.summary-table th:not(:first-child):not(:last-child),
+.summary-table td:not(:first-child):not(:last-child) { text-align: center; }
+
+/* Lists and paragraphs inside cards */
+.card ul, .card ol { margin: 0.4rem 0; padding-left: 1.5rem; }
+.card li { margin-bottom: 0.3rem; }
+.card p { margin: 0.5rem 0; }
+.card p:first-child { margin-top: 0; }
+
+/* Supply-chain issue rows — used by issueList for bullets that
+ * uniformly start with a `file:line` reference. The location renders
+ * in a dark bar above the description so the eye picks up the path
+ * separately from the prose. */
+.issue-list { margin: 0.6rem 0; }
+.issue-row {
+  margin-bottom: 0.7rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.55);
+}
+.issue-loc {
+  background: #2d333b;
+  color: #adbac7;
+  padding: 0.3rem 0.7rem;
+  font-family: "SF Mono", "Fira Code", Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+}
+.issue-loc a { color: #7ee787; text-decoration: none; }
+.issue-loc a:hover { text-decoration: underline; }
+.issue-loc code { background: none; padding: 0; color: inherit; font-size: 1em; }
+.issue-desc { padding: 0.55rem 0.8rem; }
+.issue-desc code { font-size: 0.85em; }
+
+/* Verdict highlight in metadata table */
+.verdict { font-weight: 700; }
+
+/* GitHub reference tooltips — shown on hover for #N links */
+.gh-tooltip {
+  position: absolute;
+  background: #1f2328;
+  color: #e6edf3;
+  padding: 0.55em 0.75em;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  max-width: 380px;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.28);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.gh-tooltip-state {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15em 0.5em;
+  border-radius: 999px;
+  margin-right: 0.4em;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+.gh-state-open { background: #238636; color: #fff; }
+.gh-state-closed { background: #848d97; color: #fff; }
+.gh-state-merged { background: #8957e5; color: #fff; }
+.gh-tooltip-title { vertical-align: baseline; }
+
+/* Mobile */
+@media (max-width: 640px) {
+  body { padding: 1rem 0.5rem; }
+  .card { padding: 0.9rem 1rem; }
+  pre code { font-size: 0.72rem; }
+}
+
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Deep Review: 20260702-105252-pr-10</h1>
+
+    <table class="meta-table">
+      <tr><td>Date</td><td>2026-07-02 10:52</td></tr>
+      <tr><td>Repo</td><td><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder">rancher-sandbox/rancher-desktop-upgrade-responder</a></td></tr>
+      <tr><td>Round</td><td>1 (of pr-10)</td></tr>
+      <tr><td>Author</td><td><a href="https://github.com/jandubois">@jandubois</a></td></tr>
+      <tr><td>PR</td><td><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/pull/10" class="gh-ref" data-title="Merge longhorn upstream" data-state="open" data-type="pr">#10</a> — Merge longhorn upstream</td></tr>
+      <tr><td>Branch</td><td><code>merge-longhorn-upstream</code></td></tr>
+      <tr><td>Commits</td><td><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/198af99"><code>198af99</code></a> Merge longhorn/master into rancher-desktop<br><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/5120246"><code>5120246</code></a> feat: support multiple Scarf endpoints and forward distro<br><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/0294f4f"><code>0294f4f</code></a> chore: remove dapper and make the implementation consistent</td></tr>
+      <tr><td>Reviewers</td><td><span class="pill pill-claude">Claude</span> Opus 4.8 (effort: xhigh), <span class="pill pill-codex">Codex</span> GPT 5.5 (effort: xhigh), <span class="pill pill-gemini">Gemini</span> 3.1 Pro (effort: default)</td></tr>
+      <tr><td>Verdict</td><td><span class="verdict">Merge with fixes</span> &mdash; the merge is sound and tests pass, but the multi-arch image build is broken and two silent data-loss traps need a decision before release.</td></tr>
+      <tr><td>Wall-clock time</td><td><code>21 min 3 s</code></td></tr>
+    </table>
+
+    <hr>
+
+    <hr>
+    <h2 id="executive-summary">Executive Summary <a href="#executive-summary" class="pilcrow">&#182;</a></h2>
+
+    <div class="card card-neutral">
+    <p>This upstream merge lands Scarf event forwarding, schema-based request validation, two db-cache fixes, and a dapper-free build. Tests pass and the Helm rename is consistent. But the multi-arch image build is broken: <code>${TARGETPLATFORM#linux/}</code> needs a pre-release Dockerfile frontend the file does not pin. Two silent traps also surface — the rules engine reads only the deprecated <code>ExtraInfo</code>, and unlisted telemetry keys drop with no log.</p>
+    <p>Three reviewers ran in parallel; findings were verified against the checked-out SHA, and a live <code>helm template</code> render and a <code>url.PathEscape</code> probe were run to settle chart and escaping claims. Gemini alone caught the Dockerfile break; Codex and Claude jointly caught the request-data split; Claude alone caught the privacy-doc contradiction and a pre-existing dead-code branch. The findings cluster in three themes: <strong>build/release plumbing</strong> (C1, I3, I5), <strong>silent request-data handling</strong> (I1, I2), and <strong>Scarf robustness</strong> (S1–S3).</p>
+    </div>
+    <hr>
+    <h2 id="critical-issues" class="section-critical">Critical Issues <a href="#critical-issues" class="pilcrow">&#182;</a></h2>
+
+    <div class="card card-critical">
+      <div class="finding-title" id="C1">
+        <span class="finding-num">C1.</span> Multi-arch image build breaks on an unsupported Dockerfile expansion <span class="pill pill-gemini">Gemini</span><a href="#C1" class="pilcrow">&#182;</a>
+      </div>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/package/Dockerfile#L11-L21">package/Dockerfile</a></div>
+      <pre data-start="11" data-line="16"><code class="language-dockerfile">
+ARG TARGETPLATFORM
+RUN if [ &quot;$TARGETPLATFORM&quot; != &quot;linux/amd64&quot; ] &amp;&amp; [ &quot;$TARGETPLATFORM&quot; != &quot;linux/arm64&quot; ]; then \
+    echo &quot;Error: Unsupported TARGETPLATFORM: $TARGETPLATFORM&quot; &amp;&amp; \
+    exit 1; \
+    fi
+ENV ARCH ${TARGETPLATFORM#linux/}
+
+COPY GeoLite2-City.mmdb /usr/share/
+COPY upgrade-responder-${ARCH} /usr/bin/upgrade-responder
+</code></pre>
+    <p>Bash-style pattern removal (<code>${var#pattern}</code>) is supported only under the pre-release <code>docker/dockerfile-upstream:master</code> frontend, per Docker&#39;s Dockerfile reference — not the stable <code>docker/dockerfile:1.7.0</code> this file pins. So <code>ARCH</code> does not become <code>amd64</code>/<code>arm64</code>, and <code>COPY upgrade-responder-${ARCH}</code> fails to match the arch-suffixed binaries <code>scripts/build</code> produces. The <code>docker-publish</code> job builds this file for <code>linux/amd64,linux/arm64</code>, so image publishing is blocked. The file was never built locally (Docker daemon was down during review, so a live build could not confirm the exact failure mode).</p>
+    <p>Fix: use BuildKit&#39;s built-in <code>TARGETARCH</code>, which yields <code>amd64</code>/<code>arm64</code> directly.</p>
+      <pre><code class="language-dockerfile">ARG TARGETARCH
+COPY upgrade-responder-${TARGETARCH} /usr/bin/upgrade-responder</code></pre>
+    </div>
+    <hr>
+    <h2 id="important-issues" class="section-important">Important Issues <a href="#important-issues" class="pilcrow">&#182;</a></h2>
+
+    <div class="card card-important">
+      <div class="finding-title" id="I1">
+        <span class="finding-num">I1.</span> Rules engine reads only the deprecated <code>ExtraInfo</code>, so the advertised <code>extraTagInfo</code> migration silently drops version rules <span class="pill pill-codex">Codex</span> <span class="pill pill-claude">Claude</span><a href="#I1" class="pilcrow">&#182;</a>
+      </div>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/rancherdesktop/instanceInfo.go#L45-L55">rancherdesktop/instanceInfo.go</a></div>
+      <pre data-start="45" data-line="50"><code class="language-go">	appVersion, err := semver.NewVersion(checkUpgradeRequest.AppVersion)
+	if err != nil {
+		return InstanceInfo{}, fmt.Errorf(&quot;failed to parse AppVersion as semver: %w&quot;, err)
+	}
+
+	platformAndArch, ok := checkUpgradeRequest.ExtraInfo[&quot;platform&quot;]
+	if !ok {
+		return InstanceInfo{}, errors.New(&quot;extraInfo.platform not present&quot;)
+	}
+	components := strings.Split(platformAndArch, &quot;-&quot;)
+	if len(components) != 2 {</code></pre>
+    <p>The merge marks <code>ExtraInfo</code> deprecated and makes the telemetry and Scarf paths read the merged <code>ExtraInfo</code>+<code>ExtraTagInfo</code> (<code>service.go:515,550</code> via <code>MergeStringMaps</code>). But <code>NewInstanceInfo</code> still reads <code>platform</code>/<code>platformVersion</code> only from <code>ExtraInfo</code>, and the RD schema files both keys under <code>extraTagInfoSchema</code>. A client that follows the deprecation and sends them as <code>extraTagInfo</code> yields an empty parse, so <code>GenerateCheckUpgradeResponse</code> falls back to <code>DefaultVersions</code> (<a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/upgraderesponder/service.go#L381-L384"><code>service.go:381-384</code></a>) — with correct-looking telemetry. Current clients send <code>extraInfo</code>, so this is a latent trap, not a live break.</p>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/upgraderesponder/service.go#L376-L389">upgraderesponder/service.go</a></div>
+      <pre data-start="376" data-line="381-384"><code class="language-go">}
+
+func (s *Server) GenerateCheckUpgradeResponse(request rd.CheckUpgradeRequest) (*CheckUpgradeResponse, error) {
+	resp := &amp;CheckUpgradeResponse{}
+
+	instanceInfo, err := rd.NewInstanceInfo(request)
+	if err != nil {
+		logrus.Debugf(&quot;could not parse request %+v as InstanceInfo: %s&quot;, request, err)
+		resp.Versions = s.DefaultVersions
+	} else {
+		logrus.Debugf(&quot;parsed request into InstanceInfo %+v&quot;, request)
+		for _, precomp := range s.PrecomputedVersions {
+			if precomp.Rule.AppliesTo(instanceInfo) {
+				resp.Versions = precomp.Versions</code></pre>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/upgraderesponder/service.go#L510-L520">upgraderesponder/service.go</a></div>
+      <pre data-start="510" data-line="515"><code class="language-go">
+func (s *Server) getTagsFromRequest(req *rd.CheckUpgradeRequest, location *Location) map[string]string {
+	tags := map[string]string{
+		InfluxDBTagAppVersion: req.AppVersion,
+	}
+	extraTagInfo := utils.MergeStringMaps(req.ExtraInfo, req.ExtraTagInfo)
+	for k, v := range extraTagInfo {
+		if s.ValidateExtraInfo(k, v, extraInfoTypeTag) {
+			tags[utils.ToSnakeCase(k)] = v
+		}
+	}</code></pre>
+    <p>Fix: read from the merged view, mirroring the telemetry path.</p>
+      <pre><code class="language-go">extra := utils.MergeStringMaps(req.ExtraInfo, req.ExtraTagInfo)
+platformAndArch, ok := extra[&quot;platform&quot;]</code></pre>
+    </div>
+    <div class="card card-important">
+      <div class="finding-title" id="I2">
+        <span class="finding-num">I2.</span> Schema-dropped tags and fields vanish with no log <span class="pill pill-claude">Claude</span> <span class="pill pill-gemini">Gemini</span><a href="#I2" class="pilcrow">&#182;</a>
+      </div>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/upgraderesponder/service.go#L130-L157">upgraderesponder/service.go</a></div>
+      <pre data-start="130" data-line="135-152"><code class="language-go">		return true
+	}
+	return false
+}
+
+func (s *Server) ValidateExtraInfo(key string, value interface{}, extraInfoType string) bool {
+	switch extraInfoType {
+	case extraInfoTypeTag:
+		schema, ok := s.RequestSchema.ExtraTagInfoSchema[key]
+		if !ok {
+			return false
+		}
+		return schema.Validate(value)
+	case extraInfoTypeField:
+		schema, ok := s.RequestSchema.ExtraFieldInfoSchema[key]
+		if !ok {
+			return false
+		}
+		return schema.Validate(value)
+	default:
+		return false
+	}
+}
+
+type CheckUpgradeResponse struct {
+	Versions                 []rd.Version `json:&quot;versions&quot;`
+	RequestIntervalInMinutes int          `json:&quot;requestIntervalInMinutes&quot;`
+}</code></pre>
+    <p>The old path stored every <code>extraInfo</code> key as a tag; the new path keeps only schema-listed keys. When a key is missing from the schema, <code>ValidateExtraInfo</code> returns false with no log, and the value-level check logs only at Debug (<code>Schema.Validate</code>, <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/upgraderesponder/service.go#L106"><code>service.go:106</code></a>) — invisible at the default Info level. An operator who omits a schema entry loses that telemetry dimension with zero signal, on the tool whose whole purpose is telemetry. The chart&#39;s default <code>requestSchema</code> (<a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/chart/values.yaml#L26-L33"><code>chart/values.yaml:26-33</code></a>) defines only <code>appVersionSchema</code>, so a stock deploy drops all extra tags.</p>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/upgraderesponder/service.go#L101-L111">upgraderesponder/service.go</a></div>
+      <pre data-start="101" data-line="106"><code class="language-go">}
+
+func (sc *Schema) Validate(value interface{}) (isValid bool) {
+	defer func() {
+		if !isValid {
+			logrus.Debugf(&quot;validate failed: schema %+v, value %v&quot;, sc, value)
+		}
+	}()
+
+	switch sc.DataType {
+	case &quot;string&quot;:</code></pre>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/chart/values.yaml#L21-L38">chart/values.yaml</a></div>
+      <pre data-start="21" data-line="26-33"><code class="language-yaml">      &quot;versions&quot;: [{
+        &quot;name&quot;: &quot;v1.0.0&quot;,
+        &quot;releaseDate&quot;: &quot;2020-05-18T12:30:00Z&quot;,
+        &quot;tags&quot;: [&quot;latest&quot;]
+      }]
+    }
+  requestSchema: |-
+    {
+      &quot;appVersionSchema&quot;: {
+        &quot;dataType&quot;: &quot;string&quot;,
+        &quot;maxLen&quot;: 200
+      }
+    }
+
+replicaCount: 3
+
+image:
+  repository: ghcr.io/rancher-sandbox/rancher-desktop-upgrade-responder</code></pre>
+    <p>Fix: log dropped keys at a visible level, and warn at startup when the RD-relevant keys are absent from the loaded schema.</p>
+    </div>
+    <div class="card card-important">
+      <div class="finding-title" id="I3">
+        <span class="finding-num">I3.</span> CI never builds or publishes the fork&#39;s default branch <span class="pill pill-codex">Codex</span> <span class="pill pill-claude">Claude</span><a href="#I3" class="pilcrow">&#182;</a>
+      </div>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/.github/workflows/build.yml#L1-L12">.github/workflows/build.yml</a></div>
+      <pre data-start="1" data-line="4-7"><code class="language-yaml">name: build
+on:
+  push:
+    branches:
+    - master
+    - longhorn
+    - v*
+    tags:
+    - v*
+  pull_request:
+  workflow_dispatch:
+jobs:</code></pre>
+    <p>The fork&#39;s default branch is <code>rancher-desktop</code>, absent from the push filter, so a push to it runs neither <code>build</code> nor the <code>build_push_image</code> job that publishes the <code>&lt;branch&gt;-head</code> image. Pull requests still get CI and <code>v*</code> tag pushes still publish releases, so the gap is post-merge mainline coverage, not all CI. The job also targets <code>longhornio/upgrade-responder</code> and needs <code>DOCKER_USERNAME</code>/<code>DOCKER_PASSWORD</code>/<code>CODECOV_TOKEN</code>, and <code>mergify.yml</code> keys on <code>@longhorn/maintainer</code> and <code>renovate[bot]</code> — all longhorn-specific.</p>
+    <p>Fix: decide fork intent — add <code>rancher-desktop</code> to the triggers and wire fork secrets, or drop the image-push and mergify rules that do not apply here.</p>
+    </div>
+    <div class="card card-important">
+      <div class="finding-title" id="I4">
+        <span class="finding-num">I4.</span> README privacy claim contradicts Scarf IP forwarding <span class="pill pill-claude">Claude</span><a href="#I4" class="pilcrow">&#182;</a>
+      </div>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/README.md#L206-L216">README.md</a></div>
+      <pre data-start="206" data-line="211"><code class="language-go">## Overview
+Upgrade Responder provides a way to notify the applications running remotely when there is a new version of the application become available. 
+It will also keep a record of how many requests have been sent to the Upgrade Responder server during a certain period of time(e.g. one hour), to estimate how many instances of applications are running during that period.
+It can also be used to collect telemetric.
+
+Upgrade Responder server doesn&#39;t store any information that can be potentially used to identify the client that makes the request, including IP address. See [here](#what-data-will-be-stored) for a full list of data that will be stored.
+
+For example, Longhorn uses Upgrade Responder project to create the public metric dashboard at [https://metrics.longhorn.io/](https://metrics.longhorn.io/)
+
+
+## How it works</code></pre>
+    <p><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/README.md#L211"><code>README.md:211</code></a> states the server &quot;doesn&#39;t store any information that can be potentially used to identify the client... including IP address,&quot; and line 429 repeats it. Once <code>--scarf-endpoint</code> is set, <code>sendEventSync</code> forwards the client&#39;s public IP to scarf.sh in <code>X-Scarf-IP</code>. The server itself still stores no IP, so the claim is narrowly true, but a privacy-conscious reader would not expect it to omit a new third-party data flow. The forwarding is intentional (Scarf uses IP for geo), so the fix is documentation.</p>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/README.md#L424-L434">README.md</a></div>
+      <pre data-start="424" data-line="429"><code class="language-plaintext">
+### Geography database
+
+This project includes GeoLite2 data created by MaxMind, available from [here](https://www.maxmind.com).
+
+This program doesn&#39;t store IP. Only the city level geographic data is recorded.
+
+## For Contributor
+
+### 1. Building Upgrade Responder project
+</code></pre>
+    <p>Fix: qualify the privacy statement for the Scarf-enabled case, and note in the <code>--scarf-endpoint</code> docs that enabling it transmits the client IP to scarf.sh.</p>
+    </div>
+    <div class="card card-important">
+      <div class="finding-title" id="I5">
+        <span class="finding-num">I5.</span> Local run scripts call a binary the build no longer produces <span class="pill pill-codex">Codex</span><a href="#I5" class="pilcrow">&#182;</a>
+      </div>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/rancherdesktop/run.sh#L1-L8">rancherdesktop/run.sh</a></div>
+      <pre data-start="1" data-line="3"><code class="language-sh">#!/bin/sh
+REPO_ROOT=$(git rev-parse --show-toplevel)
+$REPO_ROOT/bin/upgrade-responder --debug start \
+      --upgrade-response-config $REPO_ROOT/rancherdesktop/testdata/test-config.json \
+      --request-schema $REPO_ROOT/rancherdesktop/testdata/test-request-schema.json \
+      --application-name postman \
+      --influxdb-url http://localhost:8086 \
+      --influxdb-user admin \</code></pre>
+    <p><code>scripts/build</code> now emits <code>bin/upgrade-responder-amd64</code> and <code>-arm64</code> only, but <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/rancherdesktop/run.sh#L3"><code>run.sh:3</code></a> and the README run commands (<code>README.md:244,439</code>) still invoke <code>bin/upgrade-responder</code>. After <code>make build</code>, the documented local-run flow fails with &quot;not found.&quot;</p>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/rancherdesktop/run.sh#L1-L8">rancherdesktop/run.sh</a></div>
+      <pre data-start="1" data-line="3"><code class="language-bash">#!/bin/sh
+REPO_ROOT=$(git rev-parse --show-toplevel)
+$REPO_ROOT/bin/upgrade-responder --debug start \
+      --upgrade-response-config $REPO_ROOT/rancherdesktop/testdata/test-config.json \
+      --request-schema $REPO_ROOT/rancherdesktop/testdata/test-request-schema.json \
+      --application-name postman \
+      --influxdb-url http://localhost:8086 \
+      --influxdb-user admin \</code></pre>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/README.md#L239-L249">README.md</a></div>
+      <pre data-start="239" data-line="244"><code class="language-plaintext">## Usage
+
+### 1. Running Upgrade Responder server
+Start Upgrade Responder server by the command:
+```
+./bin/upgrade-responder --debug start &lt;FLAGS&gt;
+```
+The available flags are:
+
+| Flag  | Example value                                          | Description                                                                                                                                                                                                                       |
+|---|--------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|</code></pre>
+    <p>Fix: after building both arches, copy the host-arch binary to <code>bin/upgrade-responder</code>, or update the scripts and docs to select the suffixed name.</p>
+    </div>
+    <hr>
+    <h2 id="suggestions" class="section-suggestion">Suggestions <a href="#suggestions" class="pilcrow">&#182;</a></h2>
+
+    <div class="card card-suggestion">
+      <div class="finding-title" id="S1">
+        <span class="finding-num">S1.</span> <code>substituteTemplateVars</code> uses <code>url.PathEscape</code>, which leaves query metacharacters unescaped <span class="pill pill-claude">Claude</span><a href="#S1" class="pilcrow">&#182;</a>
+      </div>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/upgraderesponder/scarf.go#L140-L148">upgraderesponder/scarf.go</a></div>
+      <pre data-start="140" data-line="145"><code class="language-go">		key := strings.Trim(placeholder, &quot;{}&quot;)
+
+		if value, ok := vars[key]; ok {
+			return url.PathEscape(value)
+		}
+
+		return &quot;&quot;
+	})
+}</code></pre>
+    <p><code>PathEscape</code> escapes path segments but passes <code>&amp;</code> and <code>=</code> through (verified: <code>PathEscape(&quot;a&amp;b=c&quot;) == &quot;a&amp;b=c&quot;</code>). A Scarf template that places a client-controlled variable in a query string — <code>https://scarf.sh/e?v={version}</code> — lets a crafted <code>appVersion</code> such as <code>x&amp;admin=1</code> inject query parameters. Values are validated for type and length but not content, and the reserved <code>{version}</code> comes straight from <code>req.AppVersion</code>.</p>
+    <p>Fix: escape by position, or use <code>url.QueryEscape</code> for values destined for query strings; at minimum, document that templates must place variables in path segments only.</p>
+    </div>
+    <div class="card card-suggestion">
+      <div class="finding-title" id="S2">
+        <span class="finding-num">S2.</span> Scarf response body is closed without draining, defeating connection reuse <span class="pill pill-gemini">Gemini</span><a href="#S2" class="pilcrow">&#182;</a>
+      </div>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/upgraderesponder/scarf.go#L116-L132">upgraderesponder/scarf.go</a></div>
+      <pre data-start="116" data-line="121-127"><code class="language-go">	}
+
+	return result
+}
+
+func closeResponseBody(resp *http.Response) {
+	if resp != nil &amp;&amp; resp.Body != nil {
+		if err := resp.Body.Close(); err != nil {
+			logrus.Warnf(&quot;Failed to close response body: %v&quot;, err)
+		}
+	}
+}
+
+// substituteTemplateVars replaces placeholders in the form `{key}` within the
+// given template string using values from vars.
+//
+// Behavior:</code></pre>
+    <p>Go returns a connection to the pool only when its body is read to EOF. <code>closeResponseBody</code> closes without draining, so the shared <code>httpClient</code> opens a fresh connection per event. With Scarf enabled under sustained load, this churns sockets toward ephemeral-port exhaustion. Off by default, so this is a scaling caution.</p>
+    <p>Fix: <code>io.Copy(io.Discard, resp.Body)</code> before <code>Close</code>.</p>
+    </div>
+    <div class="card card-suggestion">
+      <div class="finding-title" id="S3">
+        <span class="finding-num">S3.</span> Scarf sends spawn one unbounded goroutine per request <span class="pill pill-claude">Claude</span><a href="#S3" class="pilcrow">&#182;</a>
+      </div>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/upgraderesponder/scarf.go#L66-L76">upgraderesponder/scarf.go</a></div>
+      <pre data-start="66" data-line="71"><code class="language-go">	templateVarsCopy := make(map[string]string, len(templateVars))
+	for k, v := range templateVars {
+		templateVarsCopy[k] = v
+	}
+
+	go func() {
+		if err := s.sendEventSync(templateVarsCopy, clientIP); err != nil {
+			logrus.Errorf(&quot;Failed to send Scarf.sh event for version %s: %v&quot;, appVersion, err)
+		} else {
+			logrus.Debugf(&quot;Successfully sent Scarf.sh event for version %s&quot;, appVersion)
+		}</code></pre>
+    <p><code>SendEvent</code> launches a goroutine — and one HTTP call per endpoint — for every valid request, with no bound. If scarf.sh is slow (default 30s timeout), goroutines and sockets accumulate under load. Off by default.</p>
+    <p>Fix: gate sends through a bounded worker pool or semaphore, dropping and counting events when saturated.</p>
+    </div>
+    <div class="card card-suggestion">
+      <div class="finding-title" id="S4">
+        <span class="finding-num">S4.</span> Blocking send on the unbuffered <code>syncChan</code> piles up request goroutines <span class="pill pill-gemini">Gemini</span><a href="#S4" class="pilcrow">&#182;</a>
+      </div>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/upgraderesponder/db-cache.go#L97-L108">upgraderesponder/db-cache.go</a></div>
+      <pre data-start="97" data-line="102-104"><code class="language-go">
+	c.Lock()
+	c.BatchPoints.AddPoint(p)
+	if len(c.BatchPoints.Points()) &gt;= c.CacheSize {
+		needToSync = true
+	}
+	c.Unlock()
+
+	if needToSync {
+		c.syncChan &lt;- struct{}{}
+	}
+}</code></pre>
+    <p>Once the cache exceeds <code>CacheSize</code>, every <code>AddPoint</code> attempts a blocking send on the unbuffered <code>syncChan</code>. While the consumer is inside <code>Sync()</code>, request goroutines stack up waiting to enqueue a wakeup that a single pending signal already covers.</p>
+    <p>Fix: use a non-blocking <code>select</code> send with a <code>default</code> branch.</p>
+    </div>
+    <div class="card card-suggestion">
+      <div class="finding-title" id="S5">
+        <span class="finding-num">S5.</span> <code>multierr</code> shim wraps a one-line <code>errors.Join</code> <span class="pill pill-claude">Claude</span><a href="#S5" class="pilcrow">&#182;</a>
+      </div>
+      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/upgraderesponder/scarf.go#L15-L32">upgraderesponder/scarf.go</a></div>
+      <pre data-start="15" data-line="20-27"><code class="language-go">
+var (
+	templatePlaceholderRegexp = regexp.MustCompile(`\{([^}]+)\}`)
+)
+
+// multierrType provides a helper for aggregating errors using standard library errors.Join
+type multierrType struct{}
+
+var multierr = multierrType{}
+
+func (multierrType) Append(errs ...error) error {
+	return stdErrors.Join(errs...)
+}
+
+type ScarfService struct {
+	endpointTemplates map[string]struct{}
+	timeout           time.Duration
+	httpClient        *http.Client</code></pre>
+    <p>The shim reproduces a third-party API name for a single stdlib call, and the <code>stdErrors</code> alias exists only to feed it.</p>
+    <p>Fix: accumulate into a <code>[]error</code> and call <code>errors.Join(errs...)</code> once, dropping the type, the package var, and the alias.</p>
+    </div>
+    <hr>
+    <h2 id="design-observations" class="section-design">Design Observations <a href="#design-observations" class="pilcrow">&#182;</a></h2>
+
+    <div class="card card-design">
+    <h3 id="concerns">Concerns <a href="#concerns" class="pilcrow">&#182;</a></h3>
+    <ul>
+      <li><strong>Two code paths read the same request data from different sources (future)</strong> <span class="pill pill-codex">Codex</span> <span class="pill pill-claude">Claude</span>. The rules engine keys off <code>ExtraInfo</code> alone; telemetry and Scarf key off the schema-filtered merge of <code>ExtraInfo</code> and <code>ExtraTagInfo</code>. This split is the structural root of I1 and invites drift each time a new consumer of request data appears. A single normalization at ingress — resolve one canonical map, honor the deprecation once, hand it to every consumer — collapses the read sites and removes the bug class.</li>
+      <li><em></em><code>Sync()</code> holds the cache lock across the network write (future, pre-existing)<em></em> <span class="pill pill-gemini">Gemini</span>. <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/upgraderesponder/db-cache.go#L64-L88"><code>db-cache.go:64-88</code></a> keeps <code>c.Lock()</code> for the whole retry loop, including <code>InfluxClient.Write</code>, so <code>AddPoint</code> blocks while a flush is in flight. This PR mitigates it — retries drop from 5 to 2 and <code>influxClientTimeOut = 10s</code> bounds the hold — but the lock still spans I/O. A future change could swap the batch under the lock and write outside it.</li>
+      <li><em></em><code>db-cache.go</code> dead &quot;dropped batch&quot; branch (future, pre-existing)<em></em> <span class="pill pill-claude">Claude</span>. In <code>Sync()</code> the guard <code>else if i &lt; maxSyncRetries</code> is always true inside <code>for i := 0; i &lt; maxSyncRetries; i++</code>, so the &quot;Dropped the batch points&quot; log at <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/upgraderesponder/db-cache.go#L79"><code>db-cache.go:79</code></a> never runs. On persistent InfluxDB failure the batch is discarded with only per-retry Debug logs, hiding real data loss. The condition should be <code>i &lt; maxSyncRetries-1</code>.</li>
+    </ul>
+    <h3 id="strengths">Strengths <a href="#strengths" class="pilcrow">&#182;</a></h3>
+    <ul>
+      <li><strong>Scarf init trims, deduplicates, and disables cleanly, and copies template vars before the goroutine (in-scope)</strong> <span class="pill pill-codex">Codex</span> — request handling stays isolated from later map mutation.</li>
+      <li><strong>Schema-driven filtering caps tag cardinality at the server boundary (in-scope)</strong> <span class="pill pill-codex">Codex</span> — unknown keys drop before InfluxDB rather than becoming uncontrolled series.</li>
+      <li><strong>The db-cache changes fix the real bugs (in-scope)</strong> <span class="pill pill-claude">Claude</span> — releasing the lock before signalling <code>syncChan</code> removes the deadlock, the empty-batch guard also blocks a nil-client write, and the 10s InfluxDB timeout bounds the hang.</li>
+    </ul>
+    </div>
+    <hr>
+    <h2 id="testing-assessment">Testing Assessment <a href="#testing-assessment" class="pilcrow">&#182;</a></h2>
+
+    <div class="card card-neutral">
+    <p>The new unit tests are table-driven and exercise real logic — <code>TestValidate</code>, <code>TestValidateAndLoadRequestSchema</code>, <code>TestValidateExtraInfo</code>, <code>TestNewScarfService</code>, <code>TestSubstituteTemplateVars</code> — with no mocked behavior; all pass under <code>go test -tags=test</code>. Gaps, highest risk first:</p>
+    <ol>
+      <li><strong>The I1 split-brain is untested.</strong> No test sends <code>platform</code>/<code>platformVersion</code> via <code>extraTagInfo</code> and asserts the rules engine still resolves versions, so that regression would pass CI green.</li>
+      <li><strong>Schema-driven dropping is untested.</strong> No test in <code>getTagsFromRequest</code>/<code>getFieldsFromRequest</code> asserts an unlisted key drops or a listed key survives into the point.</li>
+      <li><em></em><code>getTemplateVarsFromRequest</code> precedence is untested<em></em> — no coverage that <code>version</code>/<code>appVersion</code> resist override, or that <code>ExtraTagInfo</code> wins over <code>ExtraInfo</code>.</li>
+      <li><em></em><code>sendEventSync</code> HTTP behavior is untested<em></em> — non-2xx aggregation, body close, and multi-endpoint fan-out have no <code>httptest.Server</code> coverage, despite being the feature&#39;s core.</li>
+      <li><em></em><code>substituteTemplateVars</code> never tests a value with URL metacharacters<em></em> (spaces, <code>/</code>, <code>&amp;</code>), so the S1 escaping behavior is unverified by the suite.</li>
+    </ol>
+    </div>
+    <hr>
+    <h2 id="documentation-assessment">Documentation Assessment <a href="#documentation-assessment" class="pilcrow">&#182;</a></h2>
+
+    <div class="card card-neutral">
+    <ul>
+      <li>The README privacy section (<a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/README.md#L211"><code>README.md:211</code></a>, <code>429</code>) and the <code>--scarf-endpoint</code> docs omit IP forwarding — see I4.</li>
+      <li>The <code>Deprecated: replaced by ExtraTagInfo</code> comment (<a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/rancherdesktop/instanceInfo.go#L27"><code>instanceInfo.go:27</code></a>, <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/client/client.go#L39"><code>client/client.go:39</code></a>) misleads: the rules engine reads only <code>ExtraInfo</code> — see I1. Either the code or the comment is wrong.</li>
+      <li><code>client/client.go</code> adds <code>ExtraTagInfo</code>/<code>ExtraFieldInfo</code> fields but no setter; <code>CheckUpgrade</code> still sets only <code>ExtraInfo</code>. The added fields are dead weight for Go-client consumers unless documented as request-shape only.</li>
+      <li>The README and chart moved response-config JSON keys to lowercase; this stays compatible because <code>rd.ResponseConfig</code>/<code>rd.Version</code> carry no JSON tags and decoding is case-insensitive. No action needed.</li>
+    </ul>
+    </div>
+    <hr>
+    <h2 id="commit-structure">Commit Structure <a href="#commit-structure" class="pilcrow">&#182;</a></h2>
+
+    <div class="card card-neutral">
+    <p>The branch merges upstream history, so it carries longhorn&#39;s fixup-style commits — <code>chore: revert &quot;chore: remove dapper&quot;</code>, <code>chore: revert &quot;fix: fix validation errors&quot;</code>, <code>fix: golangci-lint error</code>. Squashing imported history is not expected, and the two fork-authored commits (<a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/0294f4f"><code>0294f4f</code></a> disarm, <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/5120246"><code>5120246</code></a> Scarf multi-endpoint) are each coherent. No action needed.</p>
+    </div>
+    <hr>
+    <h2 id="acknowledged-limitations">Acknowledged Limitations <a href="#acknowledged-limitations" class="pilcrow">&#182;</a></h2>
+
+    <div class="card card-neutral">
+    <ul>
+      <li><strong>PR deployment note</strong> — the author states the production configmap must list <code>platform</code> and <code>platformVersion</code> as string tags or those InfluxDB tags disappear. That is the operator half of I2; the finding adds the unaddressed observability gap (drops are unlogged). The change is partly consistent: <code>rancherdesktop/testdata/test-request-schema.json</code> lists both keys, but <code>chart/values.yaml</code>&#39;s default schema omits them.</li>
+      <li><em></em><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/upgraderesponder/scarf.go#L83-L89"><code>scarf.go:83-89</code></a><em></em> — the no-URL-deduplication comment marks deliberate behavior; each configured template fires its own request.</li>
+      <li><em></em><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/upgraderesponder/scarf.go#L129-L137"><code>scarf.go:129-137</code></a><em></em> — a placeholder with no matching variable resolves to an empty string rather than an error; deliberate.</li>
+    </ul>
+    </div>
+    <hr>
+    <h2 id="agent-performance-retro">Agent Performance Retro <a href="#agent-performance-retro" class="pilcrow">&#182;</a></h2>
+
+    <div class="card card-neutral">
+    <p><strong>[Claude]</strong> gave the broadest coverage and the sharpest reads. It caught both silent-data traps (I1, jointly; I2, the observability gap), the privacy-doc contradiction that no other reviewer saw (I4), and a pre-existing dead-code branch in <code>db-cache.go</code> that survives the retry loop unlogged. Its severity calibration held — it correctly labeled I1 a latent gap rather than a live regression. It missed the build-blocking C1, marking <code>package/Dockerfile</code> clean, and treated the binary-name mismatch as trivial.</p>
+    <p><strong>[Codex]</strong> was the most decisive: three well-scoped important findings, no false positives, no filler suggestions. It alone traced the arch-suffixed binary mismatch to the local-run scripts (I5) and framed the request-data split cleanly (I1). It leaned one notch high on labels — I1 and its CI finding were tagged regressions and reconciled to gaps. It missed C1, the schema-drop observability gap, and the privacy contradiction.</p>
+    <p><strong>[Gemini]</strong> earned its slot on one finding: it was the only reviewer to catch C1, the build-blocking Dockerfile expansion that blocks image publishing. That catch aside, it ran hot — it produced the review&#39;s only false positive (a hallucinated <code>@package/Dockerfile rm -f</code> Makefile line that actually reads <code>@docker rm -f</code>), two of its &quot;important&quot; findings downgraded to a suggestion and a pre-existing design observation, and it missed I1 entirely, marking <code>service.go</code> clean. High variance: one unique critical, one hallucination.</p>
+    <table class="retro-table">
+      <thead><tr><th></th><th><span class="pill pill-claude">Claude</span> Opus 4.8</th><th><span class="pill pill-codex">Codex</span> GPT 5.5</th><th><span class="pill pill-gemini">Gemini</span> 3.1 Pro</th></tr></thead>
+      <tbody>
+        <tr><td>Duration</td><td>12m 23s</td><td>6m 36s</td><td>5m 03s</td></tr>
+        <tr><td>Findings</td><td>4I 2S</td><td>3I</td><td>1C 2S</td></tr>
+        <tr><td>Tool calls</td><td>22 (Bash 10, Read 10, ToolSearch 1)</td><td>72 (shell 72)</td><td>—</td></tr>
+        <tr><td>Design observations</td><td>5</td><td>3</td><td>2</td></tr>
+        <tr><td>False positives</td><td>0</td><td>0</td><td>1</td></tr>
+        <tr><td>Unique insights</td><td>3</td><td>1</td><td>1</td></tr>
+        <tr><td>Files reviewed</td><td>36</td><td>36</td><td>36</td></tr>
+        <tr><td>Coverage misses</td><td>2</td><td>2</td><td>2</td></tr>
+        <tr><td><strong>Totals</strong></td><td><strong>4I 2S</strong></td><td><strong>3I</strong></td><td><strong>1C 2S</strong></td></tr>
+        <tr><td>Downgraded</td><td>0</td><td>0</td><td>2 (I→S)</td></tr>
+        <tr><td>Dropped</td><td>0</td><td>0</td><td>1</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Reconciliation.</strong> Gemini&#39;s I1 (Makefile typo) was dropped as a false positive — the quoted line does not exist in the file. Gemini&#39;s I2 (Scarf body drain) moved important → suggestion S2 (opt-in feature, small response bodies), and its I3 (Sync lock during I/O) moved important → design observation (pre-existing; the PR mitigates it). The I1 request-data finding from Codex and Claude, and Codex&#39;s CI finding, moved regression → gap: current <code>extraInfo</code> clients are unaffected, and <code>build.yml</code> is the fork&#39;s first GitHub Actions workflow with no prior state to regress from.</p>
+    </div>
+    <hr>
+    <h2 id="review-process-notes">Review Process Notes <a href="#review-process-notes" class="pilcrow">&#182;</a></h2>
+
+    <div class="card card-neutral">
+    <h3 id="skill-improvements">Skill improvements <a href="#skill-improvements" class="pilcrow">&#182;</a></h3>
+    <ul>
+      <li>When a Dockerfile uses bash-style parameter expansion (<code>${var#pattern}</code>, <code>${var%pattern}</code>, <code>${var/pattern/replacement}</code>), verify the pinned <code># syntax=docker/dockerfile:</code> frontend supports it. Per Docker&#39;s Dockerfile reference these forms are available only under the pre-release <code>docker/dockerfile-upstream:master</code> frontend, not stable <code>1.x</code> tags, so a stable pin silently fails to strip or substitute and a downstream <code>COPY</code>/<code>RUN</code> using the result breaks. Prefer BuildKit&#39;s predefined <code>TARGETARCH</code>/<code>TARGETOS</code> over hand-stripping <code>TARGETPLATFORM</code>.</li>
+      <li>On any path that collects or records data, when a change adds validation or filtering that discards input (schema mismatch, unknown key, failed parse), check that each discard is observable at the default log level. A drop logged only at Debug, or not logged at all, hides operator misconfiguration on exactly the path whose purpose is to capture data.</li>
+      <li>When a struct field is deprecated in favor of a replacement, enumerate every read site of the deprecated field and confirm each one also reads the replacement (or a merged view of both). A partial migration leaves the deprecated field load-bearing in precisely the paths that were not updated, so a client that adopts the replacement silently loses behavior those paths drive.</li>
+      <li>When reviewing a merge from an upstream into a fork, check that inherited CI triggers, secrets, image targets, bot/merge rules, and hard-coded branch names match the fork&#39;s own names. Upstream config keyed on the upstream&#39;s default branch, org handles, or registry silently no-ops or fails in the fork — pull-request CI can still pass while post-merge builds and publishes never fire.</li>
+    </ul>
+    <h3 id="repo-context-updates">Repo context updates <a href="#repo-context-updates" class="pilcrow">&#182;</a></h3>
+    <ul>
+      <li>[repo] This repository is a fork of <code>longhorn/upgrade-responder</code> that periodically merges the upstream. Its default branch is <code>rancher-desktop</code>, not <code>master</code>. Treat merge PRs from upstream as reconciliations: the fork-specific surface is <code>rancherdesktop/</code> (a rules engine that replaces the upstream <code>VersionMap</code>), the Helm chart&#39;s image repository, and CI/config that must be checked against fork names rather than longhorn&#39;s.</li>
+      <li>[repo] Local development runs through <code>rancherdesktop/run.sh</code> plus <code>rancherdesktop/testdata/</code> (response config and request schema); the Helm chart is a separate, less-exercised path. Verify chart changes with a live <code>helm template</code> render, since the run.sh smoke test does not cover them.</li>
+    </ul>
+    </div>
+  </main>
+  <script>window.Prism = window.Prism || {}; Prism.manual = true;</script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-diff.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-yaml.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js"></script>
+  <script>
+/* Deep Review — Prism initialization and line-number wrapping.
+ * Inlined into each generated HTML file by the beautify-review skill.
+ * Runs synchronously at the end of <body> — no event listeners.
+ *
+ * Prerequisite: a preceding <script> must set Prism.manual = true
+ * before the Prism core <script> loads.
+ */
+
+Prism.highlightAll();
+
+document.querySelectorAll('pre[data-start]').forEach(function(pre) {
+  var startLine = parseInt(pre.getAttribute('data-start'), 10) || 1;
+  var hlAttr = pre.getAttribute('data-line') || '';
+
+  /* Parse data-line into a Set of line numbers to highlight.
+   * Accepts comma-separated values: "75,76,77" or ranges: "75-84". */
+  var hlLines = new Set();
+  hlAttr.split(',').forEach(function(part) {
+    part = part.trim();
+    if (!part) return;
+    var m = part.match(/^(\d+)-(\d+)$/);
+    if (m) {
+      for (var i = parseInt(m[1], 10); i <= parseInt(m[2], 10); i++) hlLines.add(i);
+    } else {
+      hlLines.add(parseInt(part, 10));
+    }
+  });
+
+  var code = pre.querySelector('code');
+  if (!code) return;
+
+  var html = code.innerHTML;
+  var lines = html.split('\n');
+  /* Strip a trailing empty line that Prism sometimes leaves. */
+  if (lines.length > 0 && lines[lines.length - 1].trim() === '') lines.pop();
+
+  var wrapped = lines.map(function(line, idx) {
+    var lineNum = startLine + idx;
+    var cls = 'code-line' + (hlLines.has(lineNum) ? ' line-hl' : '');
+    return '<span class="' + cls + '">' + line + '</span>';
+  });
+
+  /* Join with '' (empty string) — NOT '\n'.
+   * Inside <pre>, newlines are literal whitespace. Since .code-line uses
+   * display: block, joining with '\n' produces double line spacing. */
+  code.innerHTML = wrapped.join('');
+  pre.style.counterReset = 'line ' + (startLine - 1);
+});
+
+/* GitHub reference tooltips — show title and state on hover for #N links.
+ * Links must have class="gh-ref" and data-title set by the generator. */
+document.querySelectorAll('a.gh-ref[data-title]').forEach(function(link) {
+  var tip = null;
+
+  link.addEventListener('mouseenter', function() {
+    if (tip) return;
+    tip = document.createElement('div');
+    tip.className = 'gh-tooltip';
+
+    var state = link.getAttribute('data-state') || '';
+    var type = link.getAttribute('data-type') || 'issue';
+    var label = state.charAt(0).toUpperCase() + state.slice(1).toLowerCase();
+
+    var pill = document.createElement('span');
+    pill.className = 'gh-tooltip-state gh-state-' + state;
+    pill.textContent = label + (type === 'pr' ? ' PR' : '');
+
+    var title = document.createElement('span');
+    title.className = 'gh-tooltip-title';
+    title.textContent = link.getAttribute('data-title');
+
+    tip.appendChild(pill);
+    tip.appendChild(title);
+    document.body.appendChild(tip);
+
+    var rect = link.getBoundingClientRect();
+    var tw = tip.offsetWidth;
+    var th = tip.offsetHeight;
+    var left = rect.left + window.scrollX;
+    var top = rect.top + window.scrollY - th - 8;
+
+    if (left + tw > window.innerWidth - 12) left = window.innerWidth - tw - 12;
+    if (left < 4) left = 4;
+    if (top < window.scrollY + 4) top = rect.bottom + window.scrollY + 8;
+
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
+    tip.style.opacity = '1';
+  });
+
+  link.addEventListener('mouseleave', function() {
+    if (tip) { tip.remove(); tip = null; }
+  });
+});
+
+  </script>
+</body>
+</html>
