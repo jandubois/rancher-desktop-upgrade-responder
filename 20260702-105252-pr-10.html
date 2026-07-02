@@ -207,7 +207,7 @@ h2:hover .pilcrow, h3:hover .pilcrow, .finding-title:hover .pilcrow { opacity: 1
       <tr><td>Branch</td><td><code>merge-longhorn-upstream</code></td></tr>
       <tr><td>Commits</td><td><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/198af99"><code>198af99</code></a> Merge longhorn/master into rancher-desktop<br><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/5120246"><code>5120246</code></a> feat: support multiple Scarf endpoints and forward distro<br><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/0294f4f"><code>0294f4f</code></a> chore: remove dapper and make the implementation consistent</td></tr>
       <tr><td>Reviewers</td><td><span class="pill pill-claude">Claude</span> Opus 4.8 (effort: xhigh), <span class="pill pill-codex">Codex</span> GPT 5.5 (effort: xhigh), <span class="pill pill-gemini">Gemini</span> 3.1 Pro (effort: default)</td></tr>
-      <tr><td>Verdict</td><td><span class="verdict">Merge with fixes</span> &mdash; the merge is sound and tests pass, but the multi-arch image build is broken and two silent data-loss traps need a decision before release.</td></tr>
+      <tr><td>Verdict</td><td><span class="verdict">Merge with fixes</span> &mdash; the merge is sound and tests pass; no blocker. A latent rules-engine trap (I1) and silent telemetry drops (I2), plus fork CI and binary-name gaps (I3, I5), need a decision or a fix.</td></tr>
       <tr><td>Wall-clock time</td><td><code>21 min 3 s</code></td></tr>
     </table>
 
@@ -217,32 +217,40 @@ h2:hover .pilcrow, h3:hover .pilcrow, .finding-title:hover .pilcrow { opacity: 1
     <h2 id="executive-summary">Executive Summary <a href="#executive-summary" class="pilcrow">&#182;</a></h2>
 
     <div class="card card-neutral">
-    <p>This upstream merge lands Scarf event forwarding, schema-based request validation, two db-cache fixes, and a dapper-free build. Tests pass and the Helm rename is consistent. But the multi-arch image build is broken: <code>${TARGETPLATFORM#linux/}</code> needs a pre-release Dockerfile frontend the file does not pin. Two silent traps also surface — the rules engine reads only the deprecated <code>ExtraInfo</code>, and unlisted telemetry keys drop with no log.</p>
-    <p>Three reviewers ran in parallel; findings were verified against the checked-out SHA, and a live <code>helm template</code> render and a <code>url.PathEscape</code> probe were run to settle chart and escaping claims. Gemini alone caught the Dockerfile break; Codex and Claude jointly caught the request-data split; Claude alone caught the privacy-doc contradiction and a pre-existing dead-code branch. The findings cluster in three themes: <strong>build/release plumbing</strong> (C1, I3, I5), <strong>silent request-data handling</strong> (I1, I2), and <strong>Scarf robustness</strong> (S1–S3).</p>
+    <p>This upstream merge lands Scarf event forwarding, schema-based request validation, two db-cache fixes, and a dapper-free build. Tests pass, the Helm chart renders, and the multi-arch image build works — the <code>${TARGETPLATFORM#linux/}</code> expansion resolves correctly under the pinned stable frontend, verified by build. The real risks are two silent traps: the rules engine reads only the deprecated <code>ExtraInfo</code>, and unlisted telemetry keys drop with no log.</p>
+    <p>Three reviewers ran in parallel; findings were verified against the checked-out SHA, and a live <code>helm template</code> render, a <code>url.PathEscape</code> probe, and a <code>docker buildx</code> build settled the chart, escaping, and Dockerfile claims. Codex and Claude jointly caught the request-data split; Claude alone caught the privacy-doc contradiction and a pre-existing dead-code branch; Codex alone caught the binary-name mismatch. The findings cluster in three themes: <strong>build/release plumbing</strong> (I3, I5), <strong>silent request-data handling</strong> (I1, I2), and <strong>Scarf robustness</strong> (S1–S3).</p>
+    </div>
+    <hr>
+    <h2 id="upstream-vs-fork-origin">Upstream vs Fork Origin <a href="#upstream-vs-fork-origin" class="pilcrow">&#182;</a></h2>
+
+    <div class="card card-neutral">
+    <p>The fork tracks <code>longhorn/upgrade-responder</code> and merges upstream periodically; upstream does not merge the fork back. So upstream-origin issues belong upstream (fix there, then merge down), and only fork-origin issues should be patched in this PR. Origin was determined by whether each finding&#39;s introducing commit is reachable from <code>longhorn/master</code> (the true upstream) — not by commit author, since several upstream commits were authored by Rancher/SUSE contributors. <code>upgraderesponder/scarf.go</code> and <code>upgraderesponder/db-cache.go</code> are byte-identical to <code>longhorn/master</code> (whose tip is <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/5120246"><code>5120246</code></a>), so every Scarf and db-cache finding is upstream code. <code>longhorn/master</code> has no <code>rancherdesktop/</code> package.</p>
+    <table>
+      <thead><tr><th>ID</th><th>Finding</th><th>Origin</th><th>Fix where</th></tr></thead>
+      <tbody>
+        <tr><td>I1</td><td>Rules engine reads only deprecated <code>ExtraInfo</code></td><td><strong>Fork</strong> — <code>rancherdesktop/</code> engine (<a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/43080e8"><code>43080e8</code></a>) + merge reconciliation (<a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/198af99"><code>198af99</code></a>); absent from <code>longhorn/master</code></td><td>Fork</td></tr>
+        <tr><td>I2</td><td>Schema-dropped keys vanish with no log</td><td><strong>Upstream</strong> — <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/a0c69c9"><code>a0c69c9</code></a></td><td>Upstream → merge back</td></tr>
+        <tr><td>I3</td><td>CI omits the <code>rancher-desktop</code> branch</td><td><strong>Fork adaptation</strong> — <code>build.yml</code> is upstream (<a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/d6e758c"><code>d6e758c</code></a>), but the fork branch/secrets/registry are fork-specific</td><td>Fork</td></tr>
+        <tr><td>I4</td><td>Privacy claim vs Scarf IP forwarding</td><td><strong>Upstream</strong> — claim <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/528db9f0"><code>528db9f0</code></a>, IP forwarding <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/c3a784e"><code>c3a784e</code></a>; both in <code>longhorn/master</code></td><td>Upstream → merge back; fork README diverged, so patch here too</td></tr>
+        <tr><td>I5</td><td>Binary-name mismatch</td><td><strong>Fork</strong> — <code>run.sh</code>/RD README (fork-only) call <code>bin/upgrade-responder</code>; upstream&#39;s suffixed build + <code>package/Dockerfile</code> are self-consistent</td><td>Fork</td></tr>
+        <tr><td>S1</td><td><code>PathEscape</code> query-injection</td><td><strong>Upstream</strong> — <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/5120246"><code>5120246</code></a> (<code>longhorn/master</code> tip)</td><td>Upstream → merge back</td></tr>
+        <tr><td>S2</td><td>Scarf body not drained before close</td><td><strong>Upstream</strong> — <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/5120246"><code>5120246</code></a></td><td>Upstream → merge back</td></tr>
+        <tr><td>S3</td><td>Unbounded Scarf goroutine per request</td><td><strong>Upstream</strong> — <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/c3a784e"><code>c3a784e</code></a></td><td>Upstream → merge back</td></tr>
+        <tr><td>S4</td><td>Blocking send on unbuffered <code>syncChan</code></td><td><strong>Upstream</strong> — <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/a1950ddf"><code>a1950ddf</code></a></td><td>Upstream → merge back</td></tr>
+        <tr><td>S5</td><td><code>multierr</code> shim over <code>errors.Join</code></td><td><strong>Upstream</strong> — <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/5120246"><code>5120246</code></a></td><td>Upstream → merge back</td></tr>
+        <tr><td>DO</td><td>Split request-data read paths</td><td><strong>Fork</strong> — <code>rancherdesktop/</code> engine</td><td>Fork</td></tr>
+        <tr><td>DO</td><td><code>Sync()</code> holds lock across network write</td><td><strong>Upstream</strong> — <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/a1950ddf"><code>a1950ddf</code></a></td><td>Upstream</td></tr>
+        <tr><td>DO</td><td>db-cache dead &quot;dropped batch&quot; branch</td><td><strong>Upstream</strong> — <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/a1950ddf"><code>a1950ddf</code></a></td><td>Upstream</td></tr>
+      </tbody>
+    </table>
+    <p><strong>Patch in this fork PR:</strong> I1, I3, I5, and the request-data-split design observation — all fork-only surface (<code>rancherdesktop/</code>, <code>run.sh</code>, the fork&#39;s CI config). <strong>Raise upstream and merge back (do not patch here):</strong> I2, I4, S1–S5, and the two db-cache design observations. Every finding in <code>scarf.go</code> and <code>db-cache.go</code> is byte-identical upstream code, so patching it in the fork would create merge conflicts on the next sync. <strong>I4</strong> is the one caveat: it is upstream-origin, but the fork&#39;s README has diverged from upstream&#39;s, so the fork must patch its own README copy in addition to raising the fix upstream.</p>
     </div>
     <hr>
     <h2 id="critical-issues" class="section-critical">Critical Issues <a href="#critical-issues" class="pilcrow">&#182;</a></h2>
 
     <div class="card card-critical">
-      <div class="finding-title" id="C1">
-        <span class="finding-num">C1.</span> Multi-arch image build breaks on an unsupported Dockerfile expansion <span class="pill pill-gemini">Gemini</span><a href="#C1" class="pilcrow">&#182;</a>
-      </div>
-      <div class="code-file-header"><a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/blob/198af99f60330ff04060c97db9bbd74116528e02/package/Dockerfile#L11-L21">package/Dockerfile</a></div>
-      <pre data-start="11" data-line="16"><code class="language-dockerfile">
-ARG TARGETPLATFORM
-RUN if [ &quot;$TARGETPLATFORM&quot; != &quot;linux/amd64&quot; ] &amp;&amp; [ &quot;$TARGETPLATFORM&quot; != &quot;linux/arm64&quot; ]; then \
-    echo &quot;Error: Unsupported TARGETPLATFORM: $TARGETPLATFORM&quot; &amp;&amp; \
-    exit 1; \
-    fi
-ENV ARCH ${TARGETPLATFORM#linux/}
-
-COPY GeoLite2-City.mmdb /usr/share/
-COPY upgrade-responder-${ARCH} /usr/bin/upgrade-responder
-</code></pre>
-    <p>Bash-style pattern removal (<code>${var#pattern}</code>) is supported only under the pre-release <code>docker/dockerfile-upstream:master</code> frontend, per Docker&#39;s Dockerfile reference — not the stable <code>docker/dockerfile:1.7.0</code> this file pins. So <code>ARCH</code> does not become <code>amd64</code>/<code>arm64</code>, and <code>COPY upgrade-responder-${ARCH}</code> fails to match the arch-suffixed binaries <code>scripts/build</code> produces. The <code>docker-publish</code> job builds this file for <code>linux/amd64,linux/arm64</code>, so image publishing is blocked. The file was never built locally (Docker daemon was down during review, so a live build could not confirm the exact failure mode).</p>
-    <p>Fix: use BuildKit&#39;s built-in <code>TARGETARCH</code>, which yields <code>amd64</code>/<code>arm64</code> directly.</p>
-      <pre><code class="language-dockerfile">ARG TARGETARCH
-COPY upgrade-responder-${TARGETARCH} /usr/bin/upgrade-responder</code></pre>
+    <p>None.</p>
+    <p>An earlier candidate claimed <code>package/Dockerfile</code>&#39;s <code>ENV ARCH ${TARGETPLATFORM#linux/}</code> fails under the pinned stable <code>docker/dockerfile:1.7.0</code> frontend, breaking the arch-suffixed <code>COPY</code>. A <code>docker buildx build</code> refuted it: the expansion strips <code>linux/</code> correctly (<code>TARGETPLATFORM=linux/arm64</code> → <code>ARCH=arm64</code>). Docker&#39;s reference labels the <code>${var#pattern}</code> form pre-release, but the stable BuildKit frontend supports it, and upstream builds this file in CI (the line comes from upstream commit <a href="https://github.com/rancher-sandbox/rancher-desktop-upgrade-responder/commit/d6e758c"><code>d6e758c</code></a>). Dropped as a false positive.</p>
     </div>
     <hr>
     <h2 id="important-issues" class="section-important">Important Issues <a href="#important-issues" class="pilcrow">&#182;</a></h2>
@@ -623,24 +631,24 @@ type ScarfService struct {
     <div class="card card-neutral">
     <p><strong>[Claude]</strong> gave the broadest coverage and the sharpest reads. It caught both silent-data traps (I1, jointly; I2, the observability gap), the privacy-doc contradiction that no other reviewer saw (I4), and a pre-existing dead-code branch in <code>db-cache.go</code> that survives the retry loop unlogged. Its severity calibration held — it correctly labeled I1 a latent gap rather than a live regression. It missed the build-blocking C1, marking <code>package/Dockerfile</code> clean, and treated the binary-name mismatch as trivial.</p>
     <p><strong>[Codex]</strong> was the most decisive: three well-scoped important findings, no false positives, no filler suggestions. It alone traced the arch-suffixed binary mismatch to the local-run scripts (I5) and framed the request-data split cleanly (I1). It leaned one notch high on labels — I1 and its CI finding were tagged regressions and reconciled to gaps. It missed C1, the schema-drop observability gap, and the privacy contradiction.</p>
-    <p><strong>[Gemini]</strong> earned its slot on one finding: it was the only reviewer to catch C1, the build-blocking Dockerfile expansion that blocks image publishing. That catch aside, it ran hot — it produced the review&#39;s only false positive (a hallucinated <code>@package/Dockerfile rm -f</code> Makefile line that actually reads <code>@docker rm -f</code>), two of its &quot;important&quot; findings downgraded to a suggestion and a pre-existing design observation, and it missed I1 entirely, marking <code>service.go</code> clean. High variance: one unique critical, one hallucination.</p>
+    <p><strong>[Gemini]</strong> ran hot and produced both of the review&#39;s false positives. It flagged <code>package/Dockerfile</code>&#39;s <code>${TARGETPLATFORM#linux/}</code> expansion as a build-blocker; a live <code>docker buildx build</code> refuted it — the stable frontend strips the prefix correctly. It also invented a <code>@package/Dockerfile rm -f</code> Makefile line that reads <code>@docker rm -f</code>. Two of its remaining important findings downgraded to a suggestion and a design observation, and it missed I1, marking <code>service.go</code> clean. Its surviving contributions (S2, S4) are real but minor.</p>
     <table class="retro-table">
       <thead><tr><th></th><th><span class="pill pill-claude">Claude</span> Opus 4.8</th><th><span class="pill pill-codex">Codex</span> GPT 5.5</th><th><span class="pill pill-gemini">Gemini</span> 3.1 Pro</th></tr></thead>
       <tbody>
         <tr><td>Duration</td><td>12m 23s</td><td>6m 36s</td><td>5m 03s</td></tr>
-        <tr><td>Findings</td><td>4I 2S</td><td>3I</td><td>1C 2S</td></tr>
+        <tr><td>Findings</td><td>4I 2S</td><td>3I</td><td>2S</td></tr>
         <tr><td>Tool calls</td><td>22 (Bash 10, Read 10, ToolSearch 1)</td><td>72 (shell 72)</td><td>—</td></tr>
         <tr><td>Design observations</td><td>5</td><td>3</td><td>2</td></tr>
-        <tr><td>False positives</td><td>0</td><td>0</td><td>1</td></tr>
-        <tr><td>Unique insights</td><td>3</td><td>1</td><td>1</td></tr>
+        <tr><td>False positives</td><td>0</td><td>0</td><td>2</td></tr>
+        <tr><td>Unique insights</td><td>3</td><td>1</td><td>0</td></tr>
         <tr><td>Files reviewed</td><td>36</td><td>36</td><td>36</td></tr>
         <tr><td>Coverage misses</td><td>2</td><td>2</td><td>2</td></tr>
-        <tr><td><strong>Totals</strong></td><td><strong>4I 2S</strong></td><td><strong>3I</strong></td><td><strong>1C 2S</strong></td></tr>
+        <tr><td><strong>Totals</strong></td><td><strong>4I 2S</strong></td><td><strong>3I</strong></td><td><strong>2S</strong></td></tr>
         <tr><td>Downgraded</td><td>0</td><td>0</td><td>2 (I→S)</td></tr>
-        <tr><td>Dropped</td><td>0</td><td>0</td><td>1</td></tr>
+        <tr><td>Dropped</td><td>0</td><td>0</td><td>2</td></tr>
       </tbody>
     </table>
-    <p><strong>Reconciliation.</strong> Gemini&#39;s I1 (Makefile typo) was dropped as a false positive — the quoted line does not exist in the file. Gemini&#39;s I2 (Scarf body drain) moved important → suggestion S2 (opt-in feature, small response bodies), and its I3 (Sync lock during I/O) moved important → design observation (pre-existing; the PR mitigates it). The I1 request-data finding from Codex and Claude, and Codex&#39;s CI finding, moved regression → gap: current <code>extraInfo</code> clients are unaffected, and <code>build.yml</code> is the fork&#39;s first GitHub Actions workflow with no prior state to regress from.</p>
+    <p><strong>Reconciliation.</strong> Two Gemini findings dropped as false positives. Its C1 (Dockerfile expansion) was refuted by a <code>docker buildx build</code> — the stable <code>1.7.0</code> frontend strips <code>${TARGETPLATFORM#linux/}</code> correctly, and upstream builds this file in CI. Its Makefile typo does not exist in the file (the quoted line reads <code>@docker rm -f</code>). Gemini&#39;s I2 (Scarf body drain) moved important → suggestion S2 (opt-in feature, small response bodies), and its I3 (Sync lock during I/O) moved important → design observation (pre-existing; the PR mitigates it). The I1 request-data finding from Codex and Claude, and Codex&#39;s CI finding, moved regression → gap: current <code>extraInfo</code> clients are unaffected, and <code>build.yml</code> is the fork&#39;s first GitHub Actions workflow with no prior state to regress from.</p>
     </div>
     <hr>
     <h2 id="review-process-notes">Review Process Notes <a href="#review-process-notes" class="pilcrow">&#182;</a></h2>
@@ -648,10 +656,11 @@ type ScarfService struct {
     <div class="card card-neutral">
     <h3 id="skill-improvements">Skill improvements <a href="#skill-improvements" class="pilcrow">&#182;</a></h3>
     <ul>
-      <li>When a Dockerfile uses bash-style parameter expansion (<code>${var#pattern}</code>, <code>${var%pattern}</code>, <code>${var/pattern/replacement}</code>), verify the pinned <code># syntax=docker/dockerfile:</code> frontend supports it. Per Docker&#39;s Dockerfile reference these forms are available only under the pre-release <code>docker/dockerfile-upstream:master</code> frontend, not stable <code>1.x</code> tags, so a stable pin silently fails to strip or substitute and a downstream <code>COPY</code>/<code>RUN</code> using the result breaks. Prefer BuildKit&#39;s predefined <code>TARGETARCH</code>/<code>TARGETOS</code> over hand-stripping <code>TARGETPLATFORM</code>.</li>
+      <li>When a finding claims a build or tool invocation will fail, and the tool is available, run it before rating the finding. Documentation summaries about tool-version support can be wrong: a review here rated a Dockerfile <code>${var#pattern}</code> expansion as a build-blocker on the strength of a docs summary, but a <code>docker buildx build</code> showed the stable frontend supports it. Provenance is a second cheap check — code an upstream ships and builds in its own CI is unlikely to be broken, so a &quot;this never builds&quot; claim against inherited code deserves an actual build, not a doc lookup.</li>
       <li>On any path that collects or records data, when a change adds validation or filtering that discards input (schema mismatch, unknown key, failed parse), check that each discard is observable at the default log level. A drop logged only at Debug, or not logged at all, hides operator misconfiguration on exactly the path whose purpose is to capture data.</li>
       <li>When a struct field is deprecated in favor of a replacement, enumerate every read site of the deprecated field and confirm each one also reads the replacement (or a merged view of both). A partial migration leaves the deprecated field load-bearing in precisely the paths that were not updated, so a client that adopts the replacement silently loses behavior those paths drive.</li>
       <li>When reviewing a merge from an upstream into a fork, check that inherited CI triggers, secrets, image targets, bot/merge rules, and hard-coded branch names match the fork&#39;s own names. Upstream config keyed on the upstream&#39;s default branch, org handles, or registry silently no-ops or fails in the fork — pull-request CI can still pass while post-merge builds and publishes never fire.</li>
+      <li>When a fork tracks an upstream that never merges the fork back, classify each finding&#39;s origin so upstream bugs are fixed upstream (then merged down), not patched in the fork where they will conflict on the next sync. Determine origin by whether the introducing commit is reachable from the upstream ref (<code>git merge-base --is-ancestor &lt;commit&gt; &lt;upstream&gt;/master</code>) and whether the file is byte-identical to the upstream copy — not by commit author, since upstream code is often authored by the same people who work on the fork.</li>
     </ul>
     <h3 id="repo-context-updates">Repo context updates <a href="#repo-context-updates" class="pilcrow">&#182;</a></h3>
     <ul>
